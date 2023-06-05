@@ -1,9 +1,11 @@
 from rest_framework.viewsets import ModelViewSet
-from mainapp.models import Category, Product, Cart, CartProduct
+from mainapp.models import Category, Product, Size, Color, Cart, CartProduct
 from mainapp.serializers import(
     UserSerializer, CategorySerializer, ProductSerializer, CartSerializer, 
     CartProductSerializer, RegistrationSerializer, AuthenticationSerializer
 )
+
+
 
 from django.contrib.auth import get_user_model
 
@@ -38,12 +40,11 @@ class CategoryView(ModelViewSet):
     )
 
 class ProductView(ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(is_draft=False)
     serializer_class = ProductSerializer
     
     filter_backends = (
-        DjangoFilterBackend, filters.SearchFilter,
-        filters.OrderingFilter,
+        DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,
     )
 
     filterset_fields = (
@@ -63,6 +64,7 @@ class ProductView(ModelViewSet):
         products = Product.objects.filter(discount__gt=0)
         serializers = ProductSerializer(products, many=True).data
         return Response(serializers)
+    
     
 class CartView(ModelViewSet):
     queryset = Cart.objects.all()
